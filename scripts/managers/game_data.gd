@@ -9,6 +9,7 @@ var encounters: Array = []
 var quest_data: Dictionary = {}
 var player_class: Dictionary = {}
 var combat_rules: Dictionary = {}
+var terrain_data: Dictionary = {}
 
 const TILE_SIZE := 32
 const ZONE_PACK_PATH := "res://zone_packs/"
@@ -38,11 +39,14 @@ var enc_data := _load_json(pack_path + "encounters/encounters.json")
 if enc_data.has("encounters"):
 encounters = enc_data["encounters"]
 
-# Quest
-quest_data = _load_json(pack_path + "quests/quests.json")
+	# Quest
+	quest_data = _load_json(pack_path + "quests/quests.json")
 
-# Combat rules
-combat_rules = _load_json(pack_path + "game_rules.json")
+	# Combat rules
+	combat_rules = _load_json(pack_path + "game_rules.json")
+
+	# Terrain
+	terrain_data = _load_json(pack_path + "terrain/resolved.v1.json")
 
 func get_entity(id: String) -> Dictionary:
 if entities.has(id):
@@ -75,14 +79,32 @@ return {}
 return entity.get("data", {})
 
 func get_loot_table(id: String) -> Dictionary:
-var entity := get_entity(id)
-if entity.is_empty() or entity.get("category") != "loot_table":
-return {}
-return entity.get("data", {})
+	var entity := get_entity(id)
+	if entity.is_empty() or entity.get("category") != "loot_table":
+		return {}
+	return entity.get("data", {})
+
+func get_tile_size() -> int:
+	return int(terrain_data.get("tileSize", TILE_SIZE))
+
+func get_zone_dimensions() -> Vector2i:
+	var dimensions: Dictionary = zone_data.get("dimensions", {})
+	return Vector2i(
+		int(dimensions.get("width", 0)),
+		int(dimensions.get("height", 0))
+	)
+
+func get_spawn_world_position() -> Vector2:
+	var spawn_point: Dictionary = zone_data.get("spawn_point", {})
+	var tile_size := float(get_tile_size())
+	return Vector2(
+		float(spawn_point.get("x", 0.0)) * tile_size,
+		float(spawn_point.get("y", 0.0)) * tile_size
+	)
 
 func _load_json(path: String) -> Dictionary:
-if not FileAccess.file_exists(path):
-push_warning("Missing data file: " + path)
+	if not FileAccess.file_exists(path):
+		push_warning("Missing data file: " + path)
 return {}
 var file := FileAccess.open(path, FileAccess.READ)
 var json := JSON.new()
