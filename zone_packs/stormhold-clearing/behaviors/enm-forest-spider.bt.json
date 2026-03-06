@@ -1,0 +1,127 @@
+{
+  "schema": "behavior_tree.v1",
+  "entityId": "ea:enm-forest-spider",
+  "archetype": "ambusher",
+  "root": {
+    "id": "root",
+    "type": "selector",
+    "name": "AmbusherRoot",
+    "description": "Top-level ambush predator behavior",
+    "children": [
+      {
+        "id": "retreat-check",
+        "type": "sequence",
+        "name": "RetreatSequence",
+        "children": [
+          {
+            "id": "hp-low",
+            "type": "condition",
+            "name": "IsHPLow",
+            "condition": "hp_below",
+            "conditionParams": {
+              "threshold": 0.3
+            }
+          },
+          {
+            "id": "retreat-action",
+            "type": "action",
+            "name": "Retreat",
+            "action": "retreat_to_hiding",
+            "animationState": "retreat"
+          }
+        ]
+      },
+      {
+        "id": "ambush-sequence",
+        "type": "sequence",
+        "name": "AmbushSequence",
+        "children": [
+          {
+            "id": "is-hidden",
+            "type": "condition",
+            "name": "IsHidden",
+            "condition": "is_hidden"
+          },
+          {
+            "id": "target-close",
+            "type": "condition",
+            "name": "TargetInAmbushRange",
+            "condition": "target_in_range",
+            "conditionParams": {
+              "range": 5
+            }
+          },
+          {
+            "id": "ambush-attack",
+            "type": "action",
+            "name": "AmbushStrike",
+            "action": "ambush_attack",
+            "actionParams": {
+              "damageMultiplier": 2
+            },
+            "animationState": "ambush_strike"
+          }
+        ]
+      },
+      {
+        "id": "combat-sequence",
+        "type": "sequence",
+        "name": "CombatSequence",
+        "children": [
+          {
+            "id": "in-combat",
+            "type": "condition",
+            "name": "InCombat",
+            "condition": "in_combat"
+          },
+          {
+            "id": "melee-attack",
+            "type": "action",
+            "name": "MeleeAttack",
+            "action": "melee_attack",
+            "animationState": "attack"
+          }
+        ]
+      },
+      {
+        "id": "hide-sequence",
+        "type": "sequence",
+        "name": "HideSequence",
+        "children": [
+          {
+            "id": "not-hidden",
+            "type": "condition",
+            "name": "NotHidden",
+            "condition": "not_hidden"
+          },
+          {
+            "id": "find-hiding-spot",
+            "type": "action",
+            "name": "FindHidingSpot",
+            "action": "find_hiding_spot",
+            "animationState": "sneak"
+          },
+          {
+            "id": "hide-action",
+            "type": "action",
+            "name": "Hide",
+            "action": "hide",
+            "animationState": "hidden_idle"
+          }
+        ]
+      },
+      {
+        "id": "wait-action",
+        "type": "action",
+        "name": "WaitInHiding",
+        "action": "wait",
+        "animationState": "hidden_idle"
+      }
+    ]
+  },
+  "metadata": {
+    "generatedAt": "2026-03-06T23:13:09.119Z",
+    "generator": "ForgeBehavior",
+    "version": "0.1.0"
+  }
+}

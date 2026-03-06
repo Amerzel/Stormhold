@@ -1,0 +1,241 @@
+{
+  "schema": "behavior_tree.v1",
+  "entityId": "ea:enm-goblin-shaman",
+  "archetype": "phase-boss",
+  "root": {
+    "id": "root",
+    "type": "selector",
+    "name": "PhaseBossRoot",
+    "description": "Multi-phase boss behavior with HP-based transitions",
+    "children": [
+      {
+        "id": "phase3",
+        "type": "sequence",
+        "name": "Phase3_Enraged",
+        "children": [
+          {
+            "id": "phase3-check",
+            "type": "condition",
+            "name": "HPBelow30",
+            "condition": "hp_below",
+            "conditionParams": {
+              "threshold": 0.3
+            }
+          },
+          {
+            "id": "enrage-buff",
+            "type": "action",
+            "name": "EnrageBuff",
+            "action": "apply_buff",
+            "actionParams": {
+              "buff": "enrage",
+              "speedMultiplier": 1.5,
+              "damageMultiplier": 1.8
+            }
+          },
+          {
+            "id": "phase3-attacks",
+            "type": "selector",
+            "name": "Phase3Attacks",
+            "children": [
+              {
+                "id": "phase3-dash-attack",
+                "type": "sequence",
+                "name": "DashAttack",
+                "children": [
+                  {
+                    "id": "dash-cooldown",
+                    "type": "decorator",
+                    "name": "DashCooldown",
+                    "decorator": "cooldown",
+                    "decoratorParams": {
+                      "seconds": 3
+                    },
+                    "children": [
+                      {
+                        "id": "dash-action",
+                        "type": "action",
+                        "name": "DashStrike",
+                        "action": "dash_attack",
+                        "actionParams": {
+                          "damage": "high",
+                          "range": 8
+                        },
+                        "animationState": "dash_attack"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "phase3-melee",
+                "type": "action",
+                "name": "FrenziedMelee",
+                "action": "melee_attack",
+                "actionParams": {
+                  "speed": "fast",
+                  "combo": 3
+                },
+                "animationState": "attack_frenzy"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "phase2",
+        "type": "sequence",
+        "name": "Phase2_Ranged",
+        "children": [
+          {
+            "id": "phase2-check",
+            "type": "condition",
+            "name": "HPBelow60",
+            "condition": "hp_below",
+            "conditionParams": {
+              "threshold": 0.6
+            }
+          },
+          {
+            "id": "phase2-attacks",
+            "type": "selector",
+            "name": "Phase2Attacks",
+            "children": [
+              {
+                "id": "summon-sequence",
+                "type": "sequence",
+                "name": "SummonSequence",
+                "children": [
+                  {
+                    "id": "summon-cooldown",
+                    "type": "decorator",
+                    "name": "SummonCooldown",
+                    "decorator": "cooldown",
+                    "decoratorParams": {
+                      "seconds": 15
+                    },
+                    "children": [
+                      {
+                        "id": "summon-action",
+                        "type": "action",
+                        "name": "SummonMinions",
+                        "action": "summon",
+                        "actionParams": {
+                          "count": 2,
+                          "type": "skeleton"
+                        },
+                        "animationState": "summon"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "aoe-sequence",
+                "type": "sequence",
+                "name": "AoESequence",
+                "children": [
+                  {
+                    "id": "aoe-cooldown",
+                    "type": "decorator",
+                    "name": "AoECooldown",
+                    "decorator": "cooldown",
+                    "decoratorParams": {
+                      "seconds": 8
+                    },
+                    "children": [
+                      {
+                        "id": "aoe-action",
+                        "type": "action",
+                        "name": "AoEBlast",
+                        "action": "aoe_attack",
+                        "actionParams": {
+                          "radius": 5,
+                          "damage": "medium"
+                        },
+                        "animationState": "aoe_cast"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ranged-attack",
+                "type": "action",
+                "name": "RangedAttack",
+                "action": "ranged_attack",
+                "actionParams": {
+                  "range": 12
+                },
+                "animationState": "ranged_attack"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "phase1",
+        "type": "sequence",
+        "name": "Phase1_Melee",
+        "children": [
+          {
+            "id": "phase1-attacks",
+            "type": "selector",
+            "name": "Phase1Attacks",
+            "children": [
+              {
+                "id": "dash-sequence",
+                "type": "sequence",
+                "name": "DashSequence",
+                "children": [
+                  {
+                    "id": "target-far",
+                    "type": "condition",
+                    "name": "TargetFar",
+                    "condition": "target_in_range",
+                    "conditionParams": {
+                      "range": 10,
+                      "invert": true
+                    }
+                  },
+                  {
+                    "id": "p1-dash",
+                    "type": "action",
+                    "name": "Dash",
+                    "action": "dash",
+                    "actionParams": {
+                      "range": 8
+                    },
+                    "animationState": "dash"
+                  }
+                ]
+              },
+              {
+                "id": "melee-combo",
+                "type": "action",
+                "name": "MeleeCombo",
+                "action": "melee_attack",
+                "actionParams": {
+                  "combo": 2
+                },
+                "animationState": "attack_combo"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "boss-idle",
+        "type": "action",
+        "name": "BossIdle",
+        "action": "idle",
+        "animationState": "idle_menacing"
+      }
+    ]
+  },
+  "metadata": {
+    "generatedAt": "2026-03-06T23:13:09.167Z",
+    "generator": "ForgeBehavior",
+    "version": "0.1.0"
+  }
+}

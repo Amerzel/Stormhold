@@ -1,10 +1,15 @@
 {
   "zone_id": "stormhold-clearing",
-  "packed_at": "2026-03-06T22:37:35.505857Z",
-  "file_count": 6,
+  "packed_at": "2026-03-06T23:13:40.901664+00:00Z",
+  "file_count": 11,
   "files": {
     "game_rules.json": "2cee335fff5d",
     "zone.v1.json": "8a48d6909aef",
+    "behaviors/enm-forest-spider.bt.json": "6c6f9d1712ae",
+    "behaviors/enm-goblin-bomber.bt.json": "13a32058778b",
+    "behaviors/enm-goblin-grunt.bt.json": "9da3bebc0f08",
+    "behaviors/enm-goblin-shaman.bt.json": "3941c9b6ccdc",
+    "behaviors/enm-troll-brute.bt.json": "abae620b441b",
     "encounters/encounters.json": "6c048d656340",
     "entities/entity_catalog.json": "f1f59eae4577",
     "quests/quests.json": "ab0b492bc39c",

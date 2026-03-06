@@ -1,0 +1,142 @@
+{
+  "schema": "behavior_tree.v1",
+  "entityId": "ea:enm-goblin-bomber",
+  "archetype": "pack-predator",
+  "root": {
+    "id": "root",
+    "type": "selector",
+    "name": "PackPredatorRoot",
+    "description": "Top-level pack predator behavior",
+    "children": [
+      {
+        "id": "flee-check",
+        "type": "sequence",
+        "name": "FleeSequence",
+        "children": [
+          {
+            "id": "hp-low",
+            "type": "condition",
+            "name": "IsHPLow",
+            "condition": "hp_below",
+            "conditionParams": {
+              "threshold": 0.2
+            }
+          },
+          {
+            "id": "flee-action",
+            "type": "action",
+            "name": "Flee",
+            "action": "flee",
+            "actionParams": {
+              "speed": 1.5
+            },
+            "animationState": "flee"
+          }
+        ]
+      },
+      {
+        "id": "attack-sequence",
+        "type": "sequence",
+        "name": "AttackSequence",
+        "children": [
+          {
+            "id": "target-in-range",
+            "type": "condition",
+            "name": "TargetInMeleeRange",
+            "condition": "target_in_range",
+            "conditionParams": {
+              "range": 2
+            }
+          },
+          {
+            "id": "coordinate-pack",
+            "type": "action",
+            "name": "CoordinateWithPack",
+            "action": "pack_coordinate",
+            "actionParams": {
+              "formation": "surround"
+            }
+          },
+          {
+            "id": "attack-action",
+            "type": "action",
+            "name": "Attack",
+            "action": "melee_attack",
+            "animationState": "attack"
+          }
+        ]
+      },
+      {
+        "id": "chase-sequence",
+        "type": "sequence",
+        "name": "ChaseSequence",
+        "children": [
+          {
+            "id": "target-detected",
+            "type": "condition",
+            "name": "TargetDetected",
+            "condition": "target_in_range",
+            "conditionParams": {
+              "range": 15
+            }
+          },
+          {
+            "id": "alert-action",
+            "type": "action",
+            "name": "AlertPack",
+            "action": "pack_alert",
+            "animationState": "alert"
+          },
+          {
+            "id": "chase-action",
+            "type": "action",
+            "name": "Chase",
+            "action": "chase_target",
+            "actionParams": {
+              "speed": 1.2
+            },
+            "animationState": "run"
+          }
+        ]
+      },
+      {
+        "id": "patrol-sequence",
+        "type": "sequence",
+        "name": "PatrolSequence",
+        "children": [
+          {
+            "id": "follow-leader",
+            "type": "action",
+            "name": "FollowPackLeader",
+            "action": "follow_leader",
+            "actionParams": {
+              "formation": "wedge"
+            }
+          },
+          {
+            "id": "patrol-action",
+            "type": "action",
+            "name": "Patrol",
+            "action": "patrol",
+            "actionParams": {
+              "radius": 10
+            },
+            "animationState": "walk"
+          }
+        ]
+      },
+      {
+        "id": "idle-action",
+        "type": "action",
+        "name": "Idle",
+        "action": "idle",
+        "animationState": "idle"
+      }
+    ]
+  },
+  "metadata": {
+    "generatedAt": "2026-03-06T23:13:09.281Z",
+    "generator": "ForgeBehavior",
+    "version": "0.1.0"
+  }
+}
