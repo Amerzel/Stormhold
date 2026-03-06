@@ -1,0 +1,13 @@
+{
+  "zone_id": "stormhold-clearing",
+  "packed_at": "2026-03-06T22:37:35.505857Z",
+  "file_count": 6,
+  "files": {
+    "game_rules.json": "2cee335fff5d",
+    "zone.v1.json": "8a48d6909aef",
+    "encounters/encounters.json": "6c048d656340",
+    "entities/entity_catalog.json": "f1f59eae4577",
+    "quests/quests.json": "ab0b492bc39c",
+    "terrain/resolved.v1.json": "bbfcc93b0124"
+  }
+}

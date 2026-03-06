@@ -1,0 +1,507 @@
+{
+  "combat": {
+    "constants": {
+      "armor_k": {
+        "value": 120,
+        "description": "Armor mitigation inflection point for fast fights"
+      },
+      "crit_multiplier": 1.8,
+      "base_enemy_hp": 40,
+      "stagger_window_bonus": {
+        "value": 0.2,
+        "description": "Bonus damage while enemies are staggered"
+      }
+    },
+    "formulas": {
+      "physical_damage": {
+        "expression": "base_attack * weapon_mod * (1 - target_armor / (target_armor + armor_k))",
+        "parameters": [
+          "base_attack",
+          "weapon_mod",
+          "target_armor"
+        ],
+        "constants": [
+          "armor_k"
+        ],
+        "returns": "number",
+        "description": "Physical hit damage after armor mitigation"
+      },
+      "crit_damage": {
+        "expression": "base_damage * crit_multiplier",
+        "parameters": [
+          "base_damage"
+        ],
+        "constants": [
+          "crit_multiplier"
+        ],
+        "returns": "number",
+        "description": "Damage output on a critical strike"
+      },
+      "stagger_damage": {
+        "expression": "base_damage * (1 + stagger_window_bonus)",
+        "parameters": [
+          "base_damage"
+        ],
+        "constants": [
+          "stagger_window_bonus"
+        ],
+        "returns": "number",
+        "description": "Damage during stagger windows"
+      },
+      "quest_kill_xp": {
+        "expression": "base_xp * (1 + level / 8)",
+        "parameters": [
+          "base_xp",
+          "level"
+        ],
+        "constants": [],
+        "returns": "number",
+        "description": "XP granted per kill in short-form ARPG tasks"
+      }
+    },
+    "curves": {
+      "enemy_hp_by_level": {
+        "type": "parametric",
+        "expression": "base_enemy_hp + level ^ 1.45 * 10",
+        "parameter": "level",
+        "domain": [
+          1,
+          40
+        ],
+        "description": "Baseline HP for standard enemies by level"
+      }
+    },
+    "taxonomies": {
+      "enemy_tiers": {
+        "values": [
+          {
+            "id": "trash",
+            "label": "Trash",
+            "hp_multiplier": 1,
+            "damage_multiplier": 1,
+            "xp_multiplier": 1
+          },
+          {
+            "id": "elite",
+            "label": "Elite",
+            "hp_multiplier": 2,
+            "damage_multiplier": 1.4,
+            "xp_multiplier": 2.2
+          },
+          {
+            "id": "champion",
+            "label": "Champion",
+            "hp_multiplier": 4.5,
+            "damage_multiplier": 1.9,
+            "xp_multiplier": 4
+          },
+          {
+            "id": "boss",
+            "label": "Boss",
+            "hp_multiplier": 8,
+            "damage_multiplier": 2.6,
+            "xp_multiplier": 7.5
+          }
+        ],
+        "ordered": true
+      },
+      "damage_types": {
+        "values": [
+          {
+            "id": "physical",
+            "label": "Physical",
+            "resisted_by": "armor"
+          },
+          {
+            "id": "fire",
+            "label": "Fire",
+            "resisted_by": "resistance"
+          },
+          {
+            "id": "lightning",
+            "label": "Lightning",
+            "resisted_by": "resistance"
+          },
+          {
+            "id": "shadow",
+            "label": "Shadow",
+            "resisted_by": "resistance"
+          }
+        ]
+      },
+      "weapon_types": {
+        "values": [
+          {
+            "id": "sword",
+            "label": "Sword",
+            "slot": "main_hand",
+            "stat_focus": "strength",
+            "speed_profile": "balanced"
+          },
+          {
+            "id": "dagger",
+            "label": "Dagger",
+            "slot": "main_hand",
+            "stat_focus": "agility",
+            "speed_profile": "very_fast"
+          },
+          {
+            "id": "axe",
+            "label": "Axe",
+            "slot": "two_hand",
+            "stat_focus": "strength",
+            "speed_profile": "slow_heavy"
+          },
+          {
+            "id": "bow",
+            "label": "Bow",
+            "slot": "two_hand",
+            "stat_focus": "agility",
+            "speed_profile": "ranged_burst"
+          },
+          {
+            "id": "focus",
+            "label": "Focus",
+            "slot": "off_hand",
+            "stat_focus": "intellect",
+            "speed_profile": "spell_combo"
+          }
+        ]
+      }
+    },
+    "templates": {
+      "quest_kill": {
+        "objectives": [
+          {
+            "type": "kill",
+            "count_range": [
+              10,
+              25
+            ]
+          }
+        ],
+        "estimated_time_minutes": [
+          3,
+          8
+        ],
+        "xp_formula_ref": "quest_kill_xp",
+        "difficulty_options": [
+          "trash",
+          "elite",
+          "champion"
+        ]
+      },
+      "arena_wave": {
+        "objectives": [
+          {
+            "type": "survive_waves",
+            "wave_count_range": [
+              3,
+              6
+            ]
+          }
+        ],
+        "estimated_time_minutes": [
+          5,
+          12
+        ],
+        "difficulty_options": [
+          "elite",
+          "champion"
+        ],
+        "reward_slots": [
+          "xp",
+          "gold",
+          "loot_chest"
+        ]
+      }
+    },
+    "targets": {
+      "ttk_range": {
+        "type": "keyed_range",
+        "key_taxonomy": "enemy_tiers",
+        "values": {
+          "trash": {
+            "min": 2,
+            "max": 6,
+            "unit": "seconds"
+          },
+          "elite": {
+            "min": 10,
+            "max": 25,
+            "unit": "seconds"
+          },
+          "champion": {
+            "min": 25,
+            "max": 55,
+            "unit": "seconds"
+          },
+          "boss": {
+            "min": 60,
+            "max": 150,
+            "unit": "seconds"
+          }
+        }
+      },
+      "death_rate_per_zone": {
+        "type": "range",
+        "min": 0.01,
+        "max": 0.12,
+        "unit": "deaths_per_minute",
+        "description": "Expected death rate in high-tempo combat zones"
+      }
+    },
+    "constraints": {
+      "ttk_in_range": {
+        "parameters": {
+          "ttk": "number",
+          "enemy_tier": "taxonomy:enemy_tiers"
+        },
+        "assertion": "ttk >= ttk_range[enemy_tier].min AND ttk <= ttk_range[enemy_tier].max",
+        "severity": "error",
+        "message": "TTK ${ttk}s outside target range for ${enemy_tier}"
+      },
+      "enemy_hp_range": {
+        "parameters": {
+          "hp": "number",
+          "level": "number"
+        },
+        "assertion": "hp >= enemy_hp_by_level(level) * 0.6 AND hp <= enemy_hp_by_level(level) * 1.8",
+        "severity": "warning",
+        "message": "Enemy HP ${hp} at level ${level} is far from ARPG baseline"
+      }
+    },
+    "scenarios": {
+      "level12_speedfarm": {
+        "description": "Solo speedfarm route for early loot chase",
+        "parameters": {
+          "ttk": 4,
+          "enemy_tier": "trash",
+          "level": 12,
+          "hp": 180
+        }
+      },
+      "level28_arena_push": {
+        "description": "Midgame arena run with champion spawns",
+        "parameters": {
+          "ttk": 34,
+          "enemy_tier": "champion",
+          "level": 28,
+          "hp": 900
+        }
+      },
+      "level40_boss_burn": {
+        "description": "Endgame burst setup against boss encounters",
+        "parameters": {
+          "ttk": 110,
+          "enemy_tier": "boss",
+          "level": 40,
+          "hp": 3600
+        }
+      }
+    }
+  },
+  "progression": {
+    "constants": {
+      "level_cap": 40,
+      "xp_base": 85,
+      "base_hp": {
+        "value": 90,
+        "description": "Level 1 baseline health pool"
+      },
+      "hp_per_vitality": {
+        "value": 12,
+        "description": "HP gained from each Vitality point"
+      }
+    },
+    "formulas": {
+      "xp_reward": {
+        "expression": "xp_base * level ^ 1.35",
+        "parameters": [
+          "level"
+        ],
+        "constants": [
+          "xp_base"
+        ],
+        "returns": "number",
+        "description": "XP required to reach the next level"
+      },
+      "character_max_hp": {
+        "expression": "base_hp + vitality * hp_per_vitality",
+        "parameters": [
+          "vitality"
+        ],
+        "constants": [
+          "base_hp",
+          "hp_per_vitality"
+        ],
+        "returns": "number",
+        "description": "Maximum HP by vitality investment"
+      },
+      "weapon_stat_budget": {
+        "expression": "32 * stat_multiplier",
+        "parameters": [
+          "stat_multiplier"
+        ],
+        "constants": [],
+        "returns": "number",
+        "description": "Per-hit DPS budget by rarity tier"
+      }
+    },
+    "curves": {
+      "xp_per_level": {
+        "type": "parametric",
+        "expression": "xp_reward(level)",
+        "parameter": "level",
+        "domain": [
+          1,
+          40
+        ],
+        "description": "XP requirement curve for all levels"
+      }
+    },
+    "taxonomies": {
+      "rarity_tiers": {
+        "values": [
+          {
+            "id": "common",
+            "label": "Common",
+            "stat_multiplier": 1,
+            "drop_weight": 100,
+            "color": "#FFFFFF"
+          },
+          {
+            "id": "uncommon",
+            "label": "Uncommon",
+            "stat_multiplier": 1.2,
+            "drop_weight": 50,
+            "color": "#50C878"
+          },
+          {
+            "id": "rare",
+            "label": "Rare",
+            "stat_multiplier": 1.5,
+            "drop_weight": 20,
+            "color": "#3A75FF"
+          },
+          {
+            "id": "epic",
+            "label": "Epic",
+            "stat_multiplier": 1.8,
+            "drop_weight": 6,
+            "color": "#B266FF"
+          },
+          {
+            "id": "legendary",
+            "label": "Legendary",
+            "stat_multiplier": 2.1,
+            "drop_weight": 2,
+            "color": "#FF8C00"
+          }
+        ],
+        "ordered": true
+      },
+      "stat_types": {
+        "values": [
+          {
+            "id": "strength",
+            "label": "Strength",
+            "primary_role": "melee_damage"
+          },
+          {
+            "id": "agility",
+            "label": "Agility",
+            "primary_role": "attack_speed"
+          },
+          {
+            "id": "intellect",
+            "label": "Intellect",
+            "primary_role": "skill_damage"
+          },
+          {
+            "id": "vitality",
+            "label": "Vitality",
+            "primary_role": "max_hp"
+          }
+        ]
+      }
+    },
+    "targets": {
+      "hours_per_level": {
+        "type": "lookup",
+        "points": [
+          [
+            1,
+            0.2
+          ],
+          [
+            10,
+            0.45
+          ],
+          [
+            20,
+            0.8
+          ],
+          [
+            30,
+            1.4
+          ],
+          [
+            40,
+            2.2
+          ]
+        ],
+        "interpolation": "linear"
+      },
+      "xp_per_hour_baseline": {
+        "type": "range",
+        "min": 1400,
+        "max": 7000,
+        "unit": "xp_per_hour",
+        "description": "Expected leveling throughput in repeated combat loops"
+      }
+    },
+    "constraints": {
+      "quest_reward_sanity": {
+        "parameters": {
+          "quest_xp": "number",
+          "level": "number"
+        },
+        "assertion": "quest_xp >= xp_reward(level) * 0.08 AND quest_xp <= xp_reward(level) * 1.6",
+        "severity": "warning",
+        "message": "Quest XP reward ${quest_xp} is outside expected ARPG pacing at level ${level}"
+      },
+      "weapon_dps_cap": {
+        "parameters": {
+          "dps": "number",
+          "rarity": "taxonomy:rarity_tiers"
+        },
+        "assertion": "dps <= weapon_stat_budget(rarity_tiers[rarity].stat_multiplier)",
+        "severity": "error",
+        "message": "Weapon DPS ${dps} exceeds budget for rarity ${rarity}"
+      }
+    },
+    "scenarios": {
+      "midgame_build": {
+        "description": "Level 22 character entering elite farming loop",
+        "parameters": {
+          "level": 22,
+          "quest_xp": 360,
+          "vitality": 26,
+          "dps": 34,
+          "rarity": "rare"
+        }
+      },
+      "endgame_chase": {
+        "description": "Level 40 optimized character chasing legendary upgrades",
+        "parameters": {
+          "level": 40,
+          "quest_xp": 760,
+          "vitality": 52,
+          "dps": 62,
+          "rarity": "legendary"
+        }
+      }
+    }
+  }
+}

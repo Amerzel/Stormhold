@@ -1,0 +1,65 @@
+{
+  "id": "stormhold-clearing",
+  "display_name": "Stormhold Clearing",
+  "description": "A goblin-infested forest clearing with ancient ruins. Once a knight outpost, now overrun by goblins led by a shaman performing dark rituals.",
+  "level_range": [1, 5],
+  "tier": "starter",
+  "zone_type": "overworld",
+  "dimensions": { "width": 80, "height": 60 },
+  "regions": [
+    {
+      "id": "forest-edge",
+      "terrain": "grass_forest",
+      "area_pct": 0.30,
+      "description": "Sparse forest at the clearing's edge. Dirt path leads inward. A few goblins patrol lazily.",
+      "level_range": [1, 2],
+      "entities": {
+        "enemies": ["ea:enm-goblin-grunt"],
+        "density": "sparse"
+      }
+    },
+    {
+      "id": "ruined-courtyard",
+      "terrain": "stone_ruins",
+      "area_pct": 0.30,
+      "description": "Crumbling stone walls and rubble from an old outpost. Goblin camps cluster around the remains. Crates and barrels hold supplies.",
+      "level_range": [2, 3],
+      "entities": {
+        "enemies": ["ea:enm-goblin-grunt", "ea:enm-goblin-bomber"],
+        "density": "standard",
+        "resource_nodes": ["ea:node-supply-crate"]
+      }
+    },
+    {
+      "id": "dark-hollow",
+      "terrain": "dark_forest",
+      "area_pct": 0.20,
+      "description": "Dense canopy blocks the light. Twisted trees and thick undergrowth. A troll has claimed this as its territory.",
+      "level_range": [3, 4],
+      "entities": {
+        "enemies": ["ea:enm-troll-brute", "ea:enm-goblin-grunt"],
+        "density": "standard"
+      }
+    },
+    {
+      "id": "shamans-circle",
+      "terrain": "stone_platform",
+      "area_pct": 0.20,
+      "description": "A raised stone platform marked with glowing runes. The Goblin Shaman conducts rituals here, surrounded by totems and offerings.",
+      "level_range": [4, 5],
+      "entities": {
+        "enemies": ["ea:enm-goblin-shaman"],
+        "density": "boss_arena"
+      }
+    }
+  ],
+  "connections": [],
+  "quest_locations": [
+    {
+      "id": "ql-clear-the-clearing",
+      "region": "forest-edge",
+      "quest_ref": "qf:quest:clear-the-clearing"
+    }
+  ],
+  "spawn_point": { "x": 10, "y": 50 }
+}

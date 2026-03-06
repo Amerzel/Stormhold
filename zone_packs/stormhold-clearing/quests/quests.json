@@ -1,0 +1,82 @@
+{
+  "quests": [
+    {
+      "id": "quest:clear-the-clearing",
+      "name": "Clear the Clearing",
+      "category": "quest",
+      "zone_ref": "stormhold-clearing",
+      "lore_ref": "",
+      "tags": [
+        "stormhold",
+        "main-chain",
+        "combat"
+      ],
+      "difficulty_tier": "tier_1",
+      "quest_type": "normal",
+      "quest_giver": {
+        "type": "npc",
+        "ref": "ea:zone-entry"
+      },
+      "quest_ender": {
+        "type": "npc",
+        "ref": "ea:zone-complete"
+      },
+      "start_node_id": "n_kill_goblins",
+      "reward_profile_ref": "rp:zone-clear",
+      "nodes": [
+        {
+          "node_id": "n_kill_goblins",
+          "type": "objective",
+          "objective_type": "kill_entity",
+          "params": {
+            "target_ref": "ea:enm-goblin-grunt",
+            "count": 5,
+            "zone_ref": "stormhold-clearing"
+          }
+        },
+        {
+          "node_id": "n_kill_troll",
+          "type": "objective",
+          "objective_type": "kill_entity",
+          "params": {
+            "target_ref": "ea:enm-troll-brute",
+            "count": 1,
+            "zone_ref": "stormhold-clearing"
+          }
+        },
+        {
+          "node_id": "n_kill_shaman",
+          "type": "objective",
+          "objective_type": "kill_named",
+          "params": {
+            "target_ref": "ea:enm-goblin-shaman",
+            "zone_ref": "stormhold-clearing"
+          }
+        },
+        {
+          "node_id": "n_success",
+          "type": "terminal_success"
+        }
+      ],
+      "edges": [
+        {
+          "from": "n_kill_goblins",
+          "to": "n_kill_troll",
+          "type": "sequence"
+        },
+        {
+          "from": "n_kill_troll",
+          "to": "n_kill_shaman",
+          "type": "sequence"
+        },
+        {
+          "from": "n_kill_shaman",
+          "to": "n_success",
+          "type": "sequence"
+        }
+      ],
+      "lifecycle_state": "draft",
+      "version": 1
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "encounters": [
+    {
+      "id": "enc:courtyard-camp",
+      "category": "encounter",
+      "zone_ref": "stormhold-clearing",
+      "name": "Courtyard Camp",
+      "tags": [
+        "camp",
+        "goblin",
+        "ruined-courtyard"
+      ],
+      "lifecycle_state": "approved",
+      "data": {
+        "entity_refs": [
+          "ea:enm-goblin-bomber",
+          "ea:enm-goblin-bomber",
+          "ea:enm-goblin-grunt",
+          "ea:enm-goblin-grunt"
+        ],
+        "position": {
+          "x": 55,
+          "y": 20
+        },
+        "radius": 4,
+        "difficulty_budget": 5,
+        "region": "ruined-courtyard"
+      }
+    },
+    {
+      "id": "enc:courtyard-patrol",
+      "category": "encounter",
+      "zone_ref": "stormhold-clearing",
+      "name": "Courtyard Patrol",
+      "tags": [
+        "patrol",
+        "goblin",
+        "ruined-courtyard"
+      ],
+      "lifecycle_state": "approved",
+      "data": {
+        "entity_refs": [
+          "ea:enm-goblin-grunt",
+          "ea:enm-goblin-grunt",
+          "ea:enm-goblin-grunt",
+          "ea:enm-goblin-bomber"
+        ],
+        "position": {
+          "x": 45,
+          "y": 35
+        },
+        "radius": 5,
+        "difficulty_budget": 5,
+        "region": "ruined-courtyard"
+      }
+    },
+    {
+      "id": "enc:shaman-boss",
+      "category": "encounter",
+      "zone_ref": "stormhold-clearing",
+      "name": "Goblin Shaman Boss",
+      "tags": [
+        "boss",
+        "shaman",
+        "shamans-circle"
+      ],
+      "lifecycle_state": "approved",
+      "data": {
+        "entity_refs": [
+          "ea:enm-goblin-shaman"
+        ],
+        "position": {
+          "x": 65,
+          "y": 10
+        },
+        "radius": 8,
+        "difficulty_budget": 10,
+        "region": "shamans-circle",
+        "boss_arena": true
+      }
+    },
+    {
+      "id": "enc:spider-ambush",
+      "category": "encounter",
+      "zone_ref": "stormhold-clearing",
+      "name": "Spider Ambush",
+      "tags": [
+        "ambush",
+        "spider",
+        "forest-edge"
+      ],
+      "lifecycle_state": "approved",
+      "data": {
+        "entity_refs": [
+          "ea:enm-forest-spider",
+          "ea:enm-forest-spider",
+          "ea:enm-forest-spider"
+        ],
+        "position": {
+          "x": 35,
+          "y": 30
+        },
+        "radius": 3,
+        "difficulty_budget": 3,
+        "region": "forest-edge",
+        "trigger": "proximity"
+      }
+    },
+    {
+      "id": "enc:troll-hollow",
+      "category": "encounter",
+      "zone_ref": "stormhold-clearing",
+      "name": "Troll Hollow",
+      "tags": [
+        "elite",
+        "troll",
+        "dark-hollow"
+      ],
+      "lifecycle_state": "approved",
+      "data": {
+        "entity_refs": [
+          "ea:enm-troll-brute",
+          "ea:enm-goblin-grunt",
+          "ea:enm-goblin-grunt"
+        ],
+        "position": {
+          "x": 25,
+          "y": 15
+        },
+        "radius": 6,
+        "difficulty_budget": 8,
+        "region": "dark-hollow"
+      }
+    },
+    {
+      "id": "enc:tutorial-goblins",
+      "category": "encounter",
+      "zone_ref": "stormhold-clearing",
+      "name": "Tutorial Goblins",
+      "tags": [
+        "tutorial",
+        "goblin",
+        "forest-edge"
+      ],
+      "lifecycle_state": "approved",
+      "data": {
+        "entity_refs": [
+          "ea:enm-goblin-grunt",
+          "ea:enm-goblin-grunt"
+        ],
+        "position": {
+          "x": 15,
+          "y": 45
+        },
+        "radius": 4,
+        "difficulty_budget": 2,
+        "region": "forest-edge"
+      }
+    }
+  ]
+}
