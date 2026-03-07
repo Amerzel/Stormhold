@@ -100,6 +100,37 @@ func get_spawn_world_position() -> Vector2:
 		float(spawn_point.get("y", 0.0)) * tile_size
 	)
 
+func get_progression_constant(key: String, default_value: float = 0.0) -> float:
+	var constants: Dictionary = combat_rules.get("progression", {}).get("constants", {})
+	var value = constants.get(key, default_value)
+	if value is Dictionary:
+		return float(value.get("value", default_value))
+	return float(value)
+
+func get_level_cap() -> int:
+	return int(get_progression_constant("level_cap", 1.0))
+
+func get_xp_required_for_level(level: int) -> int:
+	var formulas: Dictionary = combat_rules.get("progression", {}).get("formulas", {})
+	var xp_formula: Dictionary = formulas.get("xp_reward", {})
+	var expression := String(xp_formula.get("expression", ""))
+	var exponent := 1.0
+	if expression.contains("^"):
+		var exponent_parts := expression.split("^")
+		if exponent_parts.size() > 1:
+			exponent = float(String(exponent_parts[1]).strip_edges())
+	var xp_base := get_progression_constant("xp_base", 1.0)
+	return max(1, roundi(xp_base * pow(max(level, 1), exponent)))
+
+func calculate_character_max_hp(vitality: int) -> float:
+	var base_hp := get_progression_constant("base_hp", 0.0)
+	var hp_per_vitality := get_progression_constant("hp_per_vitality", 0.0)
+	return base_hp + float(vitality) * hp_per_vitality
+
+func get_enemy_xp_reward(entity_id: String) -> int:
+	var enemy := get_entity(entity_id)
+	return int(enemy.get("data", {}).get("xp_reward", 0))
+
 func _load_json(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		push_warning("Missing data file: " + path)

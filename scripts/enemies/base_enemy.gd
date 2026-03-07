@@ -4,12 +4,14 @@ const StatusEffectSystem := preload("res://scripts/systems/status_effect_system.
 const RuntimeTextureLoader := preload("res://scripts/resources/runtime_texture_loader.gd")
 const ENEMY_SCENE := preload("res://scenes/enemies/base_enemy.tscn")
 const LOOT_DROP_SCENE := preload("res://scenes/pickups/loot_drop.tscn")
+const ENEMY_PROJECTILE_SCENE := preload("res://scenes/projectiles/enemy_projectile.tscn")
+const GROUND_TELEGRAPH_SCENE := preload("res://scenes/projectiles/ground_telegraph.tscn")
 
 @export var entity_data: Dictionary = {}
 
 @onready var health_bar: ProgressBar = $HealthBar
 @onready var body: Polygon2D = $PlaceholderBody
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: AnimatedSprite2D = $Sprite2D
 
 var current_health := 0.0
 var max_health := 0.0
@@ -42,6 +44,7 @@ var _spider_ambush_ready := false
 var _low_hp_threshold := 0.2
 var _flee_speed_multiplier := 1.5
 var _spider_ambush_damage_multiplier := 2.0
+var _hit_flash_remaining := 0.0
 
 func _ready() -> void:
 	name = entity_data.get("id", "enemy")
@@ -129,11 +132,16 @@ func apply_damage(amount: float) -> void:
 		return
 
 	current_health = maxf(0.0, current_health - amount)
+	_hit_flash_remaining = 0.12
 	health_bar.value = current_health
 
 	if current_health <= 0.0:
 		_is_dead = true
 		velocity = Vector2.ZERO
+		if is_instance_valid(_player) and _player.has_method("award_enemy_xp"):
+			_player.award_enemy_xp(String(entity_data.get("id", "")))
+		if is_instance_valid(_player) and _player.has_method("register_enemy_kill"):
+			_player.register_enemy_kill()
 		_spawn_loot()
 		QuestManager.report_kill(String(entity_data.get("id", "")))
 		queue_free()
@@ -147,6 +155,15 @@ func apply_status_effect(effect_id: String) -> void:
 
 func get_armor() -> float:
 	return float(entity_data.get("data", {}).get("stats", {}).get("defense", 0.0))
+
+func get_enemy_id() -> String:
+	return String(entity_data.get("id", ""))
+
+func get_health_snapshot() -> Dictionary:
+	return {
+		"current": current_health,
+		"max": max_health
+	}
 
 func _update_grunt(detected: bool, distance_to_player: float, attack_range_pixels: float, move_speed_pixels: float, to_player: Vector2) -> void:
 	if detected:
@@ -177,7 +194,7 @@ func _update_bomber(detected: bool, distance_to_player: float, attack_range_pixe
 
 		velocity = Vector2.ZERO
 		_apply_state("attack")
-		_attack_player(1.0, "sfx-burning")
+		_throw_bomb_projectile(to_player)
 		return
 
 	_patrol(move_speed_pixels * 0.55)
@@ -283,7 +300,7 @@ func _update_shaman(distance_to_player: float, attack_range_pixels: float, move_
 			_boss_aoe_cooldown_remaining = float(phase_two.get("explosion_interval", 8.0))
 			velocity = Vector2.ZERO
 			_apply_state("aoe")
-			_attack_player(1.0, "sfx-burning")
+			_spawn_ground_telegraph(explosion_radius_pixels, 0.8, 1.0, "sfx-burning")
 			return
 
 		if distance_to_player > attack_range_pixels:
@@ -293,7 +310,7 @@ func _update_shaman(distance_to_player: float, attack_range_pixels: float, move_
 
 		velocity = Vector2.ZERO
 		_apply_state("attack")
-		_attack_player(1.0, "sfx-burning")
+		_cast_shaman_projectile(to_player, 1.0, "sfx-burning")
 		return
 
 	if distance_to_player > attack_range_pixels * 1.25 and _boss_dash_cooldown_remaining <= 0.0:
@@ -309,7 +326,7 @@ func _update_shaman(distance_to_player: float, attack_range_pixels: float, move_
 
 	velocity = Vector2.ZERO
 	_apply_state("attack")
-	_attack_player(1.0, "")
+	_cast_shaman_projectile(to_player, 1.0, "")
 
 func _update_default_enemy(detected: bool, distance_to_player: float, attack_range_pixels: float, move_speed_pixels: float, to_player: Vector2) -> void:
 	if detected:
@@ -353,18 +370,12 @@ func _attack_player(damage_multiplier: float, status_effect_id: String) -> void:
 	if _attack_cooldown_remaining > 0.0 or _status_effects.prevents_attack():
 		return
 
-	var enemy_data: Dictionary = entity_data.get("data", {})
-	var player_armor := 0.0
-	if _player.has_method("get_defense"):
-		player_armor = float(_player.call("get_defense"))
-
-	var attack_power := float(enemy_data.get("stats", {}).get("attack", 0.0))
-	var damage: float = CombatManager.calculate_physical_damage(attack_power * damage_multiplier, 1.0, player_armor)
+	var damage: float = _calculate_player_damage(damage_multiplier)
 	if _player.has_method("apply_damage"):
 		_player.call("apply_damage", damage)
 	if not status_effect_id.is_empty() and _player.has_method("apply_status_effect"):
 		_player.call("apply_status_effect", status_effect_id)
-	_attack_cooldown_remaining = float(enemy_data.get("attack_cooldown", 1.0))
+	_attack_cooldown_remaining = float(entity_data.get("data", {}).get("attack_cooldown", 1.0))
 
 func _should_flee() -> bool:
 	if String(entity_data.get("id", "")) in ["enm-goblin-shaman", "enm-troll-brute"]:
@@ -414,6 +425,7 @@ func _update_timers(delta: float) -> void:
 	_boss_summon_cooldown_remaining = maxf(0.0, _boss_summon_cooldown_remaining - delta)
 	_boss_aoe_cooldown_remaining = maxf(0.0, _boss_aoe_cooldown_remaining - delta)
 	_boss_dash_cooldown_remaining = maxf(0.0, _boss_dash_cooldown_remaining - delta)
+	_hit_flash_remaining = maxf(0.0, _hit_flash_remaining - delta)
 
 	if _troll_windup_remaining > 0.0:
 		_troll_windup_remaining = maxf(0.0, _troll_windup_remaining - delta)
@@ -465,7 +477,9 @@ func _refresh_visuals() -> void:
 	_update_sprite_for_state()
 
 	var tint := Color.WHITE
-	if _status_effects != null and _status_effects.has_effect("sfx-stunned"):
+	if _hit_flash_remaining > 0.0:
+		tint = Color(1.0, 0.82, 0.82, 1.0)
+	elif _status_effects != null and _status_effects.has_effect("sfx-stunned"):
 		tint = Color(0.88, 0.84, 0.22, 1.0)
 	elif _status_effects != null and _status_effects.has_effect("sfx-burning"):
 		tint = Color(0.95, 0.50, 0.26, 1.0)
@@ -486,20 +500,26 @@ func _update_sprite_for_state() -> void:
 		_update_health_bar_layout()
 		return
 
-	var sprite_key := "%s:%s" % [config.get("path", ""), _state_name]
+	var sprite_key := "%s:%s" % [config.get("path", ""), ",".join(_to_string_array(config.get("frame_indices", [])))]
 	if sprite_key != _current_sprite_key:
-		var texture := RuntimeTextureLoader.load_frame_texture(
+		var frames := RuntimeTextureLoader.load_sprite_frames(
 			config.get("path", ""),
 			int(config.get("columns", 1)),
 			int(config.get("rows", 1)),
-			int(config.get("frame", 0))
+			config.get("frame_indices", []),
+			float(config.get("fps", 8.0)),
+			false
 		)
-		if texture == null:
+		if frames == null:
 			sprite.visible = false
 			body.visible = true
 			return
-		sprite.texture = texture
+		sprite.sprite_frames = frames
+		sprite.animation = "default"
+		sprite.play("default")
 		_current_sprite_key = sprite_key
+	elif not sprite.is_playing():
+		sprite.play("default")
 
 	sprite.scale = config.get("scale", Vector2.ONE)
 	sprite.position = config.get("position", Vector2.ZERO)
@@ -510,9 +530,10 @@ func _update_sprite_for_state() -> void:
 func _update_health_bar_layout() -> void:
 	var bar_width := 36.0
 	var top_offset := -30.0
-	if sprite.visible and sprite.texture != null:
-		bar_width = clampf(float(sprite.texture.get_width()) * absf(sprite.scale.x) * 0.7, 28.0, 72.0)
-		top_offset = sprite.position.y - (float(sprite.texture.get_height()) * absf(sprite.scale.y) * 0.5) - 10.0
+	var texture := _get_current_frame_texture()
+	if sprite.visible and texture != null:
+		bar_width = clampf(float(texture.get_width()) * absf(sprite.scale.x) * 0.7, 28.0, 72.0)
+		top_offset = sprite.position.y - (float(texture.get_height()) * absf(sprite.scale.y) * 0.5) - 10.0
 	health_bar.offset_left = -bar_width * 0.5
 	health_bar.offset_right = bar_width * 0.5
 	health_bar.offset_top = top_offset
@@ -521,48 +542,130 @@ func _update_health_bar_layout() -> void:
 func _get_sprite_config() -> Dictionary:
 	match String(entity_data.get("id", "")):
 		"enm-goblin-grunt":
-			return {
-				"path": "res://art/_tiny_swords/Tiny Swords/Tiny Swords (Update 010)/Factions/Goblins/Troops/Torch/Blue/Torch_Blue.png",
-				"columns": 7,
-				"rows": 5,
-				"frame": 0,
-				"scale": Vector2.ONE,
-				"position": Vector2(0, -8)
-			}
+			return _build_sheet_config("res://art/_tiny_swords/Tiny Swords/Tiny Swords (Update 010)/Factions/Goblins/Troops/Torch/Blue/Torch_Blue.png", 7, 5, _get_sheet_row_for_state({"idle": 0, "run": 1, "attack": 2, "hidden": 0}), 8.0, Vector2.ONE, Vector2(0, -8))
 		"enm-goblin-bomber":
-			return {
-				"path": "res://art/_tiny_swords/Tiny Swords/Tiny Swords (Update 010)/Factions/Goblins/Troops/TNT/Blue/TNT_Blue.png",
-				"columns": 7,
-				"rows": 3,
-				"frame": 0,
-				"scale": Vector2.ONE,
-				"position": Vector2(0, -8)
-			}
+			return _build_sheet_config("res://art/_tiny_swords/Tiny Swords/Tiny Swords (Update 010)/Factions/Goblins/Troops/TNT/Blue/TNT_Blue.png", 7, 3, _get_sheet_row_for_state({"idle": 0, "run": 1, "attack": 2}), 8.0, Vector2.ONE, Vector2(0, -8))
 		"enm-forest-spider":
 			if _state_name == "attack":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Spider/Spider_Attack.png", "columns": 8, "rows": 1, "frame": 0, "scale": Vector2(0.9, 0.9), "position": Vector2(0, -6)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Spider/Spider_Attack.png", 8, 1, 0, 11.0, Vector2(0.9, 0.9), Vector2(0, -6))
 			if _state_name == "run":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Spider/Spider_Run.png", "columns": 5, "rows": 1, "frame": 0, "scale": Vector2(0.9, 0.9), "position": Vector2(0, -6)}
-			return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Spider/Spider_Idle.png", "columns": 8, "rows": 1, "frame": 0, "scale": Vector2(0.9, 0.9), "position": Vector2(0, -6)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Spider/Spider_Run.png", 5, 1, 0, 10.0, Vector2(0.9, 0.9), Vector2(0, -6))
+			return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Spider/Spider_Idle.png", 8, 1, 0, 8.0, Vector2(0.9, 0.9), Vector2(0, -6))
 		"enm-troll-brute":
 			if _state_name == "attack":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Attack.png", "columns": 6, "rows": 1, "frame": 0, "scale": Vector2(0.45, 0.45), "position": Vector2(0, -18)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Attack.png", 6, 1, 0, 8.0, Vector2(0.45, 0.45), Vector2(0, -18))
 			if _state_name == "windup":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Windup.png", "columns": 5, "rows": 1, "frame": 0, "scale": Vector2(0.45, 0.45), "position": Vector2(0, -18)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Windup.png", 5, 1, 0, 7.0, Vector2(0.45, 0.45), Vector2(0, -18))
 			if _state_name == "recovery":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Recovery.png", "columns": 10, "rows": 1, "frame": 0, "scale": Vector2(0.45, 0.45), "position": Vector2(0, -18)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Recovery.png", 10, 1, 0, 10.0, Vector2(0.45, 0.45), Vector2(0, -18))
 			if _state_name == "run":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Walk.png", "columns": 10, "rows": 1, "frame": 0, "scale": Vector2(0.45, 0.45), "position": Vector2(0, -18)}
-			return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Idle.png", "columns": 12, "rows": 1, "frame": 0, "scale": Vector2(0.45, 0.45), "position": Vector2(0, -18)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Walk.png", 10, 1, 0, 9.0, Vector2(0.45, 0.45), Vector2(0, -18))
+			return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Troll/Troll_Idle.png", 12, 1, 0, 8.0, Vector2(0.45, 0.45), Vector2(0, -18))
 		"enm-goblin-shaman":
 			if _state_name == "attack":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Attack.png", "columns": 10, "rows": 1, "frame": 0, "scale": Vector2(0.9, 0.9), "position": Vector2(0, -10)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Attack.png", 10, 1, 0, 11.0, Vector2(0.9, 0.9), Vector2(0, -10))
 			if _state_name == "aoe":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Explosion.png", "columns": 9, "rows": 1, "frame": 0, "scale": Vector2(0.9, 0.9), "position": Vector2(0, -10)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Explosion.png", 9, 1, 0, 12.0, Vector2(0.9, 0.9), Vector2(0, -10))
 			if _state_name == "run" or _state_name == "summon":
-				return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Run.png", "columns": 4, "rows": 1, "frame": 0, "scale": Vector2(0.9, 0.9), "position": Vector2(0, -10)}
-			return {"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Idle.png", "columns": 8, "rows": 1, "frame": 0, "scale": Vector2(0.9, 0.9), "position": Vector2(0, -10)}
+				return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Run.png", 4, 1, 0, 8.0, Vector2(0.9, 0.9), Vector2(0, -10))
+			return _build_sheet_config("res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Idle.png", 8, 1, 0, 8.0, Vector2(0.9, 0.9), Vector2(0, -10))
 	return {}
+
+func _build_sheet_config(path: String, columns: int, rows: int, row: int, fps: float, scale: Vector2, position: Vector2) -> Dictionary:
+	return {
+		"path": path,
+		"columns": columns,
+		"rows": rows,
+		"frame_indices": _row_to_indices(columns, row),
+		"fps": fps,
+		"scale": scale,
+		"position": position
+	}
+
+func _get_sheet_row_for_state(row_map: Dictionary) -> int:
+	if row_map.has(_state_name):
+		return int(row_map[_state_name])
+	return int(row_map.get("idle", 0))
+
+func _row_to_indices(columns: int, row: int) -> Array:
+	var indices: Array = []
+	var start := row * columns
+	for column in columns:
+		indices.append(start + column)
+	return indices
+
+func _get_current_frame_texture() -> Texture2D:
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation("default"):
+		return null
+	return sprite.sprite_frames.get_frame_texture("default", sprite.frame)
+
+func _to_string_array(values: Array) -> Array[String]:
+	var result: Array[String] = []
+	for value in values:
+		result.append(str(value))
+	return result
+
+func _calculate_player_damage(damage_multiplier: float) -> float:
+	var enemy_data: Dictionary = entity_data.get("data", {})
+	var player_armor := 0.0
+	if _player.has_method("get_defense"):
+		player_armor = float(_player.call("get_defense"))
+	var attack_power := float(enemy_data.get("stats", {}).get("attack", 0.0))
+	return CombatManager.calculate_physical_damage(attack_power * damage_multiplier, 1.0, player_armor)
+
+func _throw_bomb_projectile(to_player: Vector2) -> void:
+	if _attack_cooldown_remaining > 0.0 or _status_effects.prevents_attack():
+		return
+	var projectile := ENEMY_PROJECTILE_SCENE.instantiate()
+	get_parent().add_child(projectile)
+	projectile.global_position = global_position + Vector2(0, -6)
+	projectile.configure({
+		"direction": to_player.normalized(),
+		"speed": float(GameData.get_tile_size()) * 4.4,
+		"lifetime": 2.0,
+		"damage": _calculate_player_damage(1.0),
+		"status_effect_id": "sfx-burning",
+		"tint": Color(0.96, 0.50, 0.16, 1.0),
+		"hit_radius": 9.0
+	})
+	_attack_cooldown_remaining = float(entity_data.get("data", {}).get("attack_cooldown", 1.0))
+
+func _cast_shaman_projectile(to_player: Vector2, damage_multiplier: float, status_effect_id: String) -> void:
+	if _attack_cooldown_remaining > 0.0 or _status_effects.prevents_attack():
+		return
+	var projectile := ENEMY_PROJECTILE_SCENE.instantiate()
+	get_parent().add_child(projectile)
+	projectile.global_position = global_position + Vector2(0, -10)
+	projectile.configure({
+		"direction": to_player.normalized(),
+		"speed": float(GameData.get_tile_size()) * 5.0,
+		"lifetime": 2.4,
+		"damage": _calculate_player_damage(damage_multiplier),
+		"status_effect_id": status_effect_id,
+		"tint": Color(0.62, 0.90, 1.0, 1.0),
+		"hit_radius": 8.0,
+		"sprite_config": {
+			"path": "res://art/_tiny_swords/Tiny Swords (Enemy Pack)/Tiny Swords (Enemy Pack)/Enemy Pack/Shaman/Shaman_Projectile.png",
+			"columns": 7,
+			"rows": 1,
+			"frame_indices": _row_to_indices(7, 0),
+			"fps": 12.0,
+			"scale": Vector2(0.8, 0.8),
+			"position": Vector2.ZERO
+		}
+	})
+	_attack_cooldown_remaining = float(entity_data.get("data", {}).get("attack_cooldown", 1.0))
+
+func _spawn_ground_telegraph(radius_pixels: float, warning_time: float, damage_multiplier: float, status_effect_id: String) -> void:
+	var telegraph := GROUND_TELEGRAPH_SCENE.instantiate()
+	get_parent().add_child(telegraph)
+	telegraph.global_position = _player.global_position
+	telegraph.configure({
+		"radius_pixels": radius_pixels,
+		"warning_time": warning_time,
+		"damage": _calculate_player_damage(damage_multiplier),
+		"status_effect_id": status_effect_id
+	})
 
 func _spawn_loot() -> void:
 	var loot_table_id := String(entity_data.get("data", {}).get("loot_table_ref", ""))

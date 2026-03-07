@@ -12,3 +12,4 @@ func _ready() -> void:
 	player.health_changed.connect(player_hud.set_health)
 	player.died.connect(player_hud.show_death_screen)
 	player_hud.bind_player(player)
+	player_hud.bind_quest(MAIN_QUEST_ID)

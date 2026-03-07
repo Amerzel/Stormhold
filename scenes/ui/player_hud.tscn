@@ -27,6 +27,18 @@ value = 1.0
 [node name="HealthText" type="Label" parent="MarginContainer/VBoxContainer"]
 text = "HP"
 
+[node name="LevelText" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "Level 1"
+
+[node name="XpBar" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(220, 14)
+show_percentage = false
+max_value = 1.0
+value = 0.0
+
+[node name="XpText" type="Label" parent="MarginContainer/VBoxContainer"]
+text = "XP 0 / 1"
+
 [node name="AbilityBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 
 [node name="Ability1" type="PanelContainer" parent="MarginContainer/VBoxContainer/AbilityBar"]
@@ -105,6 +117,68 @@ text = "Weapon: None"
 [node name="Armor" type="Label" parent="MarginContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
 text = "Armor: None"
 
+[node name="BossBarMarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 16.0
+offset_right = 180.0
+offset_bottom = 88.0
+grow_horizontal = 2
+
+[node name="BossBarPanel" type="PanelContainer" parent="BossBarMarginContainer"]
+custom_minimum_size = Vector2(360, 0)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BossBarMarginContainer/BossBarPanel"]
+
+[node name="BossName" type="Label" parent="BossBarMarginContainer/BossBarPanel/VBoxContainer"]
+horizontal_alignment = 1
+text = "Boss"
+
+[node name="BossHealthBar" type="ProgressBar" parent="BossBarMarginContainer/BossBarPanel/VBoxContainer"]
+custom_minimum_size = Vector2(340, 20)
+show_percentage = false
+max_value = 1.0
+value = 1.0
+
+[node name="BossHealthText" type="Label" parent="BossBarMarginContainer/BossBarPanel/VBoxContainer"]
+horizontal_alignment = 1
+text = "0 / 0"
+
+[node name="QuestMarginContainer" type="MarginContainer" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 112.0
+
+[node name="QuestPanel" type="PanelContainer" parent="QuestMarginContainer"]
+custom_minimum_size = Vector2(304, 0)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="QuestMarginContainer/QuestPanel"]
+
+[node name="Header" type="Label" parent="QuestMarginContainer/QuestPanel/VBoxContainer"]
+text = "Quest"
+
+[node name="QuestTitle" type="Label" parent="QuestMarginContainer/QuestPanel/VBoxContainer"]
+text = "Clear the Clearing"
+
+[node name="QuestObjective" type="Label" parent="QuestMarginContainer/QuestPanel/VBoxContainer"]
+text = "Slay Goblin Grunt (0/5)"
+
+[node name="NotificationMarginContainer" type="MarginContainer" parent="."]
+offset_left = 16.0
+offset_top = 420.0
+offset_right = 340.0
+offset_bottom = 704.0
+
+[node name="NotificationPanel" type="PanelContainer" parent="NotificationMarginContainer"]
+custom_minimum_size = Vector2(300, 0)
+
+[node name="NotificationList" type="VBoxContainer" parent="NotificationMarginContainer/NotificationPanel"]
+
 [node name="DeathOverlay" type="ColorRect" parent="."]
 visible = false
 anchors_preset = 15
@@ -136,3 +210,121 @@ text = "The clearing resets. Try the fight again."
 
 [node name="RestartButton" type="Button" parent="DeathOverlay/CenterContainer/PanelContainer/VBoxContainer"]
 text = "Restart"
+
+[node name="VictoryOverlay" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.72)
+
+[node name="CenterContainer" type="CenterContainer" parent="VictoryOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="VictoryOverlay/CenterContainer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VictoryOverlay/CenterContainer/PanelContainer"]
+custom_minimum_size = Vector2(260, 0)
+
+[node name="Title" type="Label" parent="VictoryOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+horizontal_alignment = 1
+text = "Victory"
+
+[node name="Body" type="Label" parent="VictoryOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+horizontal_alignment = 1
+text = "The clearing is safe for now."
+
+[node name="Stats" type="Label" parent="VictoryOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+horizontal_alignment = 1
+text = "Enemies defeated: 0\nDamage dealt: 0\nTime elapsed: 00:00"
+
+[node name="PlayAgainButton" type="Button" parent="VictoryOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+text = "Play Again"
+
+[node name="PauseOverlay" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.58)
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="PauseOverlay/CenterContainer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseOverlay/CenterContainer/PanelContainer"]
+custom_minimum_size = Vector2(280, 0)
+
+[node name="Title" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+horizontal_alignment = 1
+text = "Paused"
+
+[node name="Controls" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+autowrap_mode = 2
+horizontal_alignment = 1
+text = "WASD Move\nLeft Click Attack\nSpace Dodge\nQ/E/R Abilities\nF Potion\nEsc Resume"
+
+[node name="StatsPanel" type="PanelContainer" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/StatsPanel"]
+
+[node name="Level" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/StatsPanel/VBoxContainer"]
+text = "Level: 1"
+
+[node name="Attack" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/StatsPanel/VBoxContainer"]
+text = "Attack: 0"
+
+[node name="Defense" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/StatsPanel/VBoxContainer"]
+text = "Defense: 0"
+
+[node name="Health" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/StatsPanel/VBoxContainer"]
+text = "Max HP: 0"
+
+[node name="Primary" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/StatsPanel/VBoxContainer"]
+text = "Strength: 0"
+
+[node name="Secondary" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/StatsPanel/VBoxContainer"]
+text = "Vitality: 0"
+
+[node name="InventoryPanel" type="PanelContainer" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/InventoryPanel"]
+
+[node name="Header" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+text = "Equipment"
+
+[node name="Weapons" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+autowrap_mode = 2
+text = "Weapons: None"
+
+[node name="CycleWeaponButton" type="Button" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+text = "Cycle Weapon"
+
+[node name="Armors" type="Label" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+autowrap_mode = 2
+text = "Armor: None"
+
+[node name="CycleArmorButton" type="Button" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+text = "Cycle Armor"
+
+[node name="ResumeButton" type="Button" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+text = "Resume"
+
+[node name="RestartButton" type="Button" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+text = "Restart Run"
+
+[node name="QuitButton" type="Button" parent="PauseOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+text = "Quit"

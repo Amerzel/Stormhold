@@ -10,3 +10,7 @@ Thumbs.db
 # IDE
 .vscode/
 *.swp
+
+# Local assets and scratch
+art/_tiny_swords/
+tmp/

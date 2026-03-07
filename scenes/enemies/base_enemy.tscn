@@ -33,7 +33,7 @@ script = ExtResource("1")
 color = Color(0.78, 0.19, 0.19, 1)
 polygon = PackedVector2Array(-10, -16, 10, -16, 10, 2, -10, 2)
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
 visible = false
 position = Vector2(0, -16)
 
