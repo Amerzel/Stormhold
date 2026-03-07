@@ -10,4 +10,5 @@ func _ready() -> void:
 		QuestManager.start_quest(MAIN_QUEST_ID)
 
 	player.health_changed.connect(player_hud.set_health)
-	player_hud.set_health(player.current_health, player.max_health)
+	player.died.connect(player_hud.show_death_screen)
+	player_hud.bind_player(player)

@@ -26,3 +26,113 @@ value = 1.0
 
 [node name="HealthText" type="Label" parent="MarginContainer/VBoxContainer"]
 text = "HP"
+
+[node name="AbilityBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+
+[node name="Ability1" type="PanelContainer" parent="MarginContainer/VBoxContainer/AbilityBar"]
+custom_minimum_size = Vector2(110, 0)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/AbilityBar/Ability1"]
+
+[node name="Key" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability1/VBoxContainer"]
+text = "Q"
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability1/VBoxContainer"]
+text = "-"
+
+[node name="CooldownBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/AbilityBar/Ability1/VBoxContainer"]
+custom_minimum_size = Vector2(96, 12)
+show_percentage = false
+max_value = 1.0
+value = 0.0
+
+[node name="CooldownText" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability1/VBoxContainer"]
+text = ""
+
+[node name="Ability2" type="PanelContainer" parent="MarginContainer/VBoxContainer/AbilityBar"]
+custom_minimum_size = Vector2(110, 0)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/AbilityBar/Ability2"]
+
+[node name="Key" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability2/VBoxContainer"]
+text = "E"
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability2/VBoxContainer"]
+text = "-"
+
+[node name="CooldownBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/AbilityBar/Ability2/VBoxContainer"]
+custom_minimum_size = Vector2(96, 12)
+show_percentage = false
+max_value = 1.0
+value = 0.0
+
+[node name="CooldownText" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability2/VBoxContainer"]
+text = ""
+
+[node name="Ability3" type="PanelContainer" parent="MarginContainer/VBoxContainer/AbilityBar"]
+custom_minimum_size = Vector2(110, 0)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/AbilityBar/Ability3"]
+
+[node name="Key" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability3/VBoxContainer"]
+text = "R"
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability3/VBoxContainer"]
+text = "-"
+
+[node name="CooldownBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/AbilityBar/Ability3/VBoxContainer"]
+custom_minimum_size = Vector2(96, 12)
+show_percentage = false
+max_value = 1.0
+value = 0.0
+
+[node name="CooldownText" type="Label" parent="MarginContainer/VBoxContainer/AbilityBar/Ability3/VBoxContainer"]
+text = ""
+
+[node name="InventoryPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/InventoryPanel"]
+
+[node name="Gold" type="Label" parent="MarginContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+text = "Gold: 0"
+
+[node name="Potions" type="Label" parent="MarginContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+text = "Potions: 0"
+
+[node name="Weapon" type="Label" parent="MarginContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+text = "Weapon: None"
+
+[node name="Armor" type="Label" parent="MarginContainer/VBoxContainer/InventoryPanel/VBoxContainer"]
+text = "Armor: None"
+
+[node name="DeathOverlay" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="CenterContainer" type="CenterContainer" parent="DeathOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="DeathOverlay/CenterContainer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DeathOverlay/CenterContainer/PanelContainer"]
+custom_minimum_size = Vector2(220, 0)
+
+[node name="Title" type="Label" parent="DeathOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+horizontal_alignment = 1
+text = "You Have Fallen"
+
+[node name="Body" type="Label" parent="DeathOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+horizontal_alignment = 1
+text = "The clearing resets. Try the fight again."
+
+[node name="RestartButton" type="Button" parent="DeathOverlay/CenterContainer/PanelContainer/VBoxContainer"]
+text = "Restart"

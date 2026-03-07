@@ -1,9 +1,28 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemies/base_enemy.gd" id="1"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(18, 16)
+
+[sub_resource type="StyleBoxFlat" id="2"]
+bg_color = Color(0.11, 0.07, 0.07, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="3"]
+bg_color = Color(0.83, 0.16, 0.16, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [node name="BaseEnemy" type="CharacterBody2D"]
 collision_layer = 2
@@ -14,6 +33,10 @@ script = ExtResource("1")
 color = Color(0.78, 0.19, 0.19, 1)
 polygon = PackedVector2Array(-10, -16, 10, -16, 10, 2, -10, 2)
 
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -16)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -7)
 shape = SubResource("1")
@@ -23,6 +46,9 @@ offset_left = -24.0
 offset_top = -34.0
 offset_right = 24.0
 offset_bottom = -22.0
+custom_minimum_size = Vector2(36, 6)
+theme_override_styles/background = SubResource("2")
+theme_override_styles/fill = SubResource("3")
 show_percentage = false
 max_value = 1.0
 value = 1.0
