@@ -1,0 +1,38 @@
+{
+  "reward_profiles": [
+    {
+      "id": "rp:zone-clear",
+      "name": "Zone Clear Reward",
+      "category": "reward_profile",
+      "zone_ref": "stormhold-clearing",
+      "lore_ref": null,
+      "tags": [
+        "stormhold",
+        "main-quest",
+        "tier-1"
+      ],
+      "difficulty_tier": "tier_1",
+      "lifecycle_state": "approved",
+      "version": 1,
+      "rewards": {
+        "xp": 250,
+        "gold": 50,
+        "scaling_strategy": "static",
+        "choice_groups": [
+          {
+            "label": "Choose your reward",
+            "pick_count": 1,
+            "options": [
+              {
+                "item_ref": "ea:wpn-shamans-bane"
+              },
+              {
+                "item_ref": "ea:arm-troll-hide"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

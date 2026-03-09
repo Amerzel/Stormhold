@@ -1,12 +1,12 @@
 {
   "schema": "behavior_tree.v1",
-  "entityId": "ea:enm-goblin-bomber",
-  "archetype": "pack-predator",
+  "entityId": "enm-goblin-bomber",
+  "archetype": "ranged-kiter",
   "root": {
     "id": "root",
     "type": "selector",
-    "name": "PackPredatorRoot",
-    "description": "Top-level pack predator behavior",
+    "name": "RangedKiterRoot",
+    "description": "Ranged attacker that maintains distance and kites when pressured",
     "children": [
       {
         "id": "flee-check",
@@ -28,74 +28,86 @@
             "name": "Flee",
             "action": "flee",
             "actionParams": {
-              "speed": 1.5
+              "speedMultiplier": 1.5
             },
-            "animationState": "flee"
+            "animationState": "run"
           }
         ]
       },
       {
-        "id": "attack-sequence",
+        "id": "kite-sequence",
         "type": "sequence",
-        "name": "AttackSequence",
+        "name": "KiteSequence",
+        "description": "Disengage when target is too close",
         "children": [
           {
-            "id": "target-in-range",
+            "id": "target-too-close",
             "type": "condition",
-            "name": "TargetInMeleeRange",
+            "name": "TargetTooClose",
             "condition": "target_in_range",
             "conditionParams": {
               "range": 2
             }
           },
           {
-            "id": "coordinate-pack",
+            "id": "disengage",
             "type": "action",
-            "name": "CoordinateWithPack",
-            "action": "pack_coordinate",
+            "name": "Disengage",
+            "action": "move_away_from_target",
             "actionParams": {
-              "formation": "surround"
-            }
-          },
-          {
-            "id": "attack-action",
-            "type": "action",
-            "name": "Attack",
-            "action": "melee_attack",
-            "animationState": "attack"
+              "targetDistance": 4
+            },
+            "animationState": "run"
           }
         ]
       },
       {
-        "id": "chase-sequence",
+        "id": "ranged-attack-sequence",
         "type": "sequence",
-        "name": "ChaseSequence",
+        "name": "RangedAttackSequence",
+        "children": [
+          {
+            "id": "target-in-range",
+            "type": "condition",
+            "name": "TargetInAttackRange",
+            "condition": "target_in_range",
+            "conditionParams": {
+              "range": 6
+            }
+          },
+          {
+            "id": "ranged-attack",
+            "type": "action",
+            "name": "RangedAttack",
+            "action": "ranged_attack",
+            "animationState": "attack_ranged"
+          }
+        ]
+      },
+      {
+        "id": "close-to-range-sequence",
+        "type": "sequence",
+        "name": "CloseToRangeSequence",
+        "description": "Move toward target to get within attack range (but not melee range)",
         "children": [
           {
             "id": "target-detected",
             "type": "condition",
             "name": "TargetDetected",
-            "condition": "target_in_range",
+            "condition": "target_detected",
             "conditionParams": {
-              "range": 15
+              "range": 10
             }
           },
           {
-            "id": "alert-action",
+            "id": "close-to-range",
             "type": "action",
-            "name": "AlertPack",
-            "action": "pack_alert",
-            "animationState": "alert"
-          },
-          {
-            "id": "chase-action",
-            "type": "action",
-            "name": "Chase",
-            "action": "chase_target",
+            "name": "CloseToRange",
+            "action": "move_to_range",
             "actionParams": {
-              "speed": 1.2
+              "targetDistance": 4
             },
-            "animationState": "run"
+            "animationState": "walk"
           }
         ]
       },
@@ -105,21 +117,12 @@
         "name": "PatrolSequence",
         "children": [
           {
-            "id": "follow-leader",
-            "type": "action",
-            "name": "FollowPackLeader",
-            "action": "follow_leader",
-            "actionParams": {
-              "formation": "wedge"
-            }
-          },
-          {
             "id": "patrol-action",
             "type": "action",
             "name": "Patrol",
             "action": "patrol",
             "actionParams": {
-              "radius": 10
+              "radius": 8
             },
             "animationState": "walk"
           }
@@ -135,7 +138,7 @@
     ]
   },
   "metadata": {
-    "generatedAt": "2026-03-06T23:13:09.281Z",
+    "generatedAt": "2026-03-09T19:17:34.882Z",
     "generator": "ForgeBehavior",
     "version": "0.1.0"
   }

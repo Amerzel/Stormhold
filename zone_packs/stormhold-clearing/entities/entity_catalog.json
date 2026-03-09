@@ -3,11 +3,11 @@
   "producer": {
     "tool": "ForgeEntity",
     "version": "1.0.0",
-    "generatedAt": "2026-03-06T22:37:35.002Z"
+    "generatedAt": "2026-03-09T19:21:40.192Z"
   },
-  "exported_at": "2026-03-06T22:37:35.003Z",
+  "exported_at": "2026-03-09T19:21:40.192Z",
   "crucible_hash": "sha256:54d08872c9d3f546ec4775a286be9e4f4b9b873d38e0144a14fe5dc180551899",
-  "entity_count": 23,
+  "entity_count": 26,
   "filters_applied": {
     "lifecycle": [
       "approved"
@@ -34,12 +34,13 @@
         "cooldown": 20,
         "applies_status": "sfx-battle-fury",
         "level_req": 3,
-        "description": "Let out a fearsome battle cry, gaining 25% increased damage and 10% movement speed for 8 seconds."
+        "description": "Let out a fearsome battle cry, gaining 25% increased damage and 10% movement speed for 8 seconds.",
+        "custom_description": "This is a custom description"
       },
       "level": null,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 17:33:12",
       "entity_ref": "ea:abl-battle-cry"
     },
     {
@@ -205,12 +206,13 @@
           "abl-shield-bash",
           "abl-whirlwind",
           "abl-battle-cry"
-        ]
+        ],
+        "description": "A battle-hardened warrior who wields blade and shield. Excels in melee combat with powerful abilities."
       },
       "level": null,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:18:42",
       "entity_ref": "ea:cls-warrior"
     },
     {
@@ -299,12 +301,13 @@
         "loot_table_ref": "loot-goblin-common",
         "behavior_archetype": "ambusher",
         "hidden_until_aggro": true,
-        "sprite_ref": "Enemy Pack/Spider"
+        "sprite_ref": "Enemy Pack/Spider",
+        "description": "A patient ambush predator that lurks unseen until prey wanders too close. Strikes fast, dies faster."
       },
       "level": 2,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:17:54",
       "entity_ref": "ea:enm-forest-spider"
     },
     {
@@ -340,12 +343,13 @@
           "abl-bomb-throw"
         ],
         "behavior_archetype": "ranged-kiter",
-        "sprite_ref": "Factions/Goblins/Troops/TNT"
+        "sprite_ref": "Factions/Goblins/Troops/TNT",
+        "description": "A cackling goblin clutching volatile explosives. Keeps its distance and lobs bombs from afar."
       },
       "level": 2,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:17:54",
       "entity_ref": "ea:enm-goblin-bomber"
     },
     {
@@ -377,12 +381,13 @@
         "xp_reward": 10,
         "loot_table_ref": "loot-goblin-common",
         "behavior_archetype": "melee-rusher",
-        "sprite_ref": "Factions/Goblins/Troops/Torch"
+        "sprite_ref": "Factions/Goblins/Troops/Torch",
+        "description": "A small, scrappy goblin armed with a crude torch. Attacks in groups and swarms the unwary."
       },
       "level": 1,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:17:54",
       "entity_ref": "ea:enm-goblin-grunt"
     },
     {
@@ -443,12 +448,13 @@
             "explosion_interval": 8
           }
         ],
-        "sprite_ref": "Enemy Pack/Shaman"
+        "sprite_ref": "Enemy Pack/Shaman",
+        "description": "The cunning leader of the Stormhold goblins. Wields dark magic across three deadly phases."
       },
       "level": 5,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:17:54",
       "entity_ref": "ea:enm-goblin-shaman"
     },
     {
@@ -484,12 +490,13 @@
         "xp_reward": 60,
         "loot_table_ref": "loot-troll-elite",
         "behavior_archetype": "melee-rusher",
-        "sprite_ref": "Enemy Pack/Troll"
+        "sprite_ref": "Enemy Pack/Troll",
+        "description": "A massive, lumbering troll with devastating strength. Telegraphs its swings but hits like a boulder."
       },
       "level": 4,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:17:54",
       "entity_ref": "ea:enm-troll-brute"
     },
     {
@@ -533,12 +540,13 @@
               0
             ]
           }
-        ]
+        ],
+        "description": "Scraps of coin and the occasional healing draught, scavenged from a fallen goblin."
       },
       "level": null,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:18:03",
       "entity_ref": "ea:loot-goblin-common"
     },
     {
@@ -582,12 +590,13 @@
               3
             ]
           }
-        ]
+        ],
+        "description": "The shaman's hoard \u2014 gold, the legendary Shaman's Bane blade, and volatile fire bombs."
       },
       "level": null,
-      "version": 1,
+      "version": 2,
       "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:18:03",
       "entity_ref": "ea:loot-shaman-boss"
     },
     {
@@ -639,13 +648,123 @@
               1
             ]
           }
-        ]
+        ],
+        "description": "A hefty haul of gold and salvageable troll-hide armor from the brute that wore it."
+      },
+      "level": null,
+      "version": 2,
+      "created_at": "2026-03-06 22:08:08",
+      "updated_at": "2026-03-09 19:18:03",
+      "entity_ref": "ea:loot-troll-elite"
+    },
+    {
+      "id": "npc-elder-maren",
+      "name": "Elder Maren",
+      "category": "npc",
+      "tier": "common",
+      "rarity": "common",
+      "tags": [
+        "npc",
+        "quest-giver",
+        "elder"
+      ],
+      "zone_ref": "stormhold-clearing",
+      "lore_ref": null,
+      "asset_ref": null,
+      "lifecycle_state": "approved",
+      "data": {
+        "role": "quest_giver",
+        "profession": "village elder",
+        "description": "The last authority in the ruined settlement. Weary but resolute, she offers bounties on the goblin menace.",
+        "position": {
+          "x": 10,
+          "y": 50
+        },
+        "quest_refs": [
+          "quest:clear-the-clearing"
+        ],
+        "faction": "stormhold-villagers",
+        "sprite_ref": "Factions/Knights/Troops/Pawn"
       },
       "level": null,
       "version": 1,
-      "created_at": "2026-03-06 22:08:08",
-      "updated_at": "2026-03-06 22:08:08",
-      "entity_ref": "ea:loot-troll-elite"
+      "created_at": "2026-03-09 19:20:03",
+      "updated_at": "2026-03-09 19:20:03",
+      "entity_ref": "ea:npc-elder-maren"
+    },
+    {
+      "id": "npc-kael-smith",
+      "name": "Kael the Weaponsmith",
+      "category": "npc",
+      "tier": "common",
+      "rarity": "common",
+      "tags": [
+        "npc",
+        "merchant",
+        "blacksmith"
+      ],
+      "zone_ref": "stormhold-clearing",
+      "lore_ref": null,
+      "asset_ref": null,
+      "lifecycle_state": "approved",
+      "data": {
+        "role": "merchant",
+        "profession": "weaponsmith",
+        "description": "A grizzled smith who set up a makeshift forge near the clearing entrance. Sells basic arms to those brave enough to venture deeper.",
+        "position": {
+          "x": 12,
+          "y": 48
+        },
+        "shop_inventory_refs": [
+          "ea:wpn-iron-sword",
+          "ea:wpn-goblin-cleaver",
+          "ea:con-health-potion",
+          "ea:con-fire-bomb"
+        ],
+        "faction": "neutral",
+        "sprite_ref": "Factions/Knights/Troops/Warrior"
+      },
+      "level": null,
+      "version": 1,
+      "created_at": "2026-03-09 19:20:02",
+      "updated_at": "2026-03-09 19:20:02",
+      "entity_ref": "ea:npc-kael-smith"
+    },
+    {
+      "id": "npc-sera-healer",
+      "name": "Sera the Herbalist",
+      "category": "npc",
+      "tier": "common",
+      "rarity": "common",
+      "tags": [
+        "npc",
+        "healer",
+        "merchant"
+      ],
+      "zone_ref": "stormhold-clearing",
+      "lore_ref": null,
+      "asset_ref": null,
+      "lifecycle_state": "approved",
+      "data": {
+        "role": "healer",
+        "profession": "herbalist",
+        "description": "A traveling herbalist offering restorative salves and potions. Will heal you for a small fee.",
+        "position": {
+          "x": 14,
+          "y": 46
+        },
+        "shop_inventory_refs": [
+          "ea:con-health-potion"
+        ],
+        "heal_cost": 5,
+        "faction": "neutral",
+        "sprite_ref": "Factions/Knights/Troops/Pawn"
+      },
+      "level": null,
+      "version": 1,
+      "created_at": "2026-03-09 19:20:03",
+      "updated_at": "2026-03-09 19:20:03",
+      "entity_ref": "ea:npc-sera-healer"
     },
     {
       "id": "sfx-battle-fury",

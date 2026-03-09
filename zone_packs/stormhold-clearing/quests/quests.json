@@ -32,6 +32,9 @@
             "target_ref": "ea:enm-goblin-grunt",
             "count": 5,
             "zone_ref": "stormhold-clearing"
+          },
+          "visual_data": {
+            "tracking_text": "Defeat goblin grunts (0/5)"
           }
         },
         {
@@ -42,6 +45,9 @@
             "target_ref": "ea:enm-troll-brute",
             "count": 1,
             "zone_ref": "stormhold-clearing"
+          },
+          "visual_data": {
+            "tracking_text": "Slay the Troll Brute"
           }
         },
         {
@@ -51,6 +57,9 @@
           "params": {
             "target_ref": "ea:enm-goblin-shaman",
             "zone_ref": "stormhold-clearing"
+          },
+          "visual_data": {
+            "tracking_text": "Defeat the Goblin Shaman"
           }
         },
         {
@@ -76,7 +85,7 @@
         }
       ],
       "lifecycle_state": "draft",
-      "version": 1
+      "version": 4
     }
   ]
 }
